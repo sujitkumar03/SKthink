@@ -1,0 +1,10 @@
+citHeader("To cite SKthink in publications use:")
+
+bibentry(
+  bibtype = "Manual",
+  title = "SKthink: Statistical Thinking Tools for Data Analysis",
+  author = person("Sujit", "Kumar", email = "sujit.kumar.stat@gmail.com"),
+  year = 2026,
+  url = "https://github.com/sujitkumar03/SKthink",
+  note = "R package version 0.1.0"
+)
