@@ -49,18 +49,34 @@ library(SKthink)
 ### 1. Session Logging
 
 ```r
-# Start logging session
-sknote(format = "html", file_path = "my_analysis.html")
+library(SKthink)
+library(ggplot2)
 
-# Run your analysis
+# 1. Start logging session
+sknote(format = "html", file_path = "my_analysis.html", save_plots = TRUE)
+
+# 2. Descriptive Statistics
 summary(mtcars)
-mean(mtcars$mpg)
-plot(cars, main = "Speed vs Distance")
+cat("Mean MPG:", mean(mtcars$mpg), "\n")
 
-# Stop logging and finalize the report
+# 3. ggplot2 Visualization (Automatically captured by sknote)
+p <- ggplot(mtcars, aes(x = wt, y = mpg, color = factor(cyl))) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, linewidth = 1) +
+  labs(
+    title = "Weight vs MPG by Cylinder",
+    x = "Weight (1000 lbs)",
+    y = "Miles Per Gallon",
+    color = "Cylinders"
+  ) +
+  theme_minimal(base_size = 14)
+
+print(p)
+
+# 4. Stop logging and finalize report
 sknote_stop()
 
-# Open the generated report
+# 5. Open the generated HTML report
 browseURL("my_analysis.html")
 ```
 
