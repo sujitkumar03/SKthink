@@ -1,0 +1,289 @@
+````markdown
+---
+title: "SKthink: Statistical Thinking Tools"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{SKthink: Statistical Thinking Tools}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  warning = FALSE,
+  message = FALSE
+)
+```
+
+```{r setup}
+library(SKthink)
+library(ggplot2)
+```
+
+# Introduction
+
+Welcome to **SKthink**, a comprehensive R package for session logging, data cleaning, statistical analysis, and data visualization. The package is designed to simplify common statistical workflows while improving reproducibility and reporting.
+
+This vignette demonstrates a complete workflow using SKthink.
+
+# 1. Session Logging and Reproducibility
+
+One of the key features of SKthink is session logging. It allows users to save their analysis workflow and create reproducible records of their work.
+
+## Start a Logging Session
+
+```{r eval=FALSE}
+sk_note()
+```
+
+## Run Your Analysis
+
+```{r eval=FALSE}
+x <- 1:10
+
+mean(x)
+
+summary(x)
+```
+
+## Stop and Save the Session
+
+```{r eval=FALSE}
+sk_note_close("analysis_log.txt")
+```
+
+## Check Session Status
+
+```{r eval=FALSE}
+sk_note_status()
+```
+
+The session logging module helps users maintain reproducible analysis records and share their workflow with collaborators.
+
+# 2. Data Cleaning
+
+Data cleaning is an essential step before statistical analysis. SKthink provides utilities for handling missing values and duplicate observations.
+
+## Missing Value Report
+
+```{r}
+data(airquality)
+
+sk_missing(airquality)
+```
+
+## Missing Value Imputation
+
+```{r}
+airquality_clean <- sk_impute(
+  airquality,
+  method = "median"
+)
+
+sk_missing(airquality_clean)
+```
+
+## Remove Duplicate Records
+
+```{r}
+dup_data <- mtcars[c(1,1,2,3,3,3), ]
+
+clean_data <- sk_duplicate_remove(
+  dup_data
+)
+
+nrow(dup_data)
+
+nrow(clean_data)
+```
+
+After cleaning, the dataset becomes ready for analysis.
+
+# 3. Descriptive Statistics and Exploratory Data Analysis
+
+Exploratory analysis helps users understand distributions, trends, and potential anomalies in the data.
+
+## Summary Statistics
+
+```{r}
+sk_stat(mtcars)
+```
+
+## Frequency Distribution
+
+```{r eval=FALSE}
+sk_frequency(mtcars$cyl)
+```
+
+## Group-wise Summary Statistics
+
+```{r eval=FALSE}
+sk_group_stat(
+  data = mtcars,
+  group = "cyl",
+  variable = "mpg"
+)
+```
+
+Descriptive analysis provides an overview of the dataset before formal hypothesis testing.
+
+# 4. Statistical Analysis
+
+SKthink includes several statistical testing functions for common analytical tasks.
+
+## Shapiro-Wilk Normality Test
+
+```{r}
+sk_shapiro_test(
+  mtcars$mpg
+)
+```
+
+## Independent Sample T-Test
+
+```{r}
+auto_mpg <- mtcars$mpg[
+  mtcars$am == 0
+]
+
+manual_mpg <- mtcars$mpg[
+  mtcars$am == 1
+]
+
+sk_t_test_two(
+  auto_mpg,
+  manual_mpg
+)
+```
+
+## Analysis of Variance (ANOVA)
+
+```{r}
+mtcars$cyl <- factor(
+  mtcars$cyl
+)
+
+sk_anova(
+  hp ~ cyl,
+  data = mtcars
+)
+```
+
+## Correlation Analysis
+
+```{r}
+sk_correlation_test(
+  mtcars$wt,
+  mtcars$mpg,
+  method = "pearson"
+)
+```
+
+These functions provide formatted outputs suitable for reports and publications.
+
+# 5. Data Visualization
+
+Visualization is an important component of statistical communication. SKthink provides wrappers around ggplot2 for generating publication-ready graphics.
+
+## Scatter Plot
+
+```{r eval=FALSE}
+sk_scatter(
+  data = mtcars,
+  x = "wt",
+  y = "mpg",
+  color = "cyl",
+  add_regression = TRUE,
+  title = "Weight vs MPG"
+)
+```
+
+## Histogram
+
+```{r eval=FALSE}
+sk_histogram(
+  data = mtcars,
+  x = "mpg",
+  add_density = TRUE,
+  title = "Distribution of MPG"
+)
+```
+
+## Box Plot
+
+```{r eval=FALSE}
+sk_boxplot(
+  data = mtcars,
+  x = "cyl",
+  y = "mpg",
+  fill = "cyl",
+  add_points = TRUE,
+  title = "MPG by Cylinder Group"
+)
+```
+
+## Bar Plot
+
+```{r eval=FALSE}
+cyl_summary <- aggregate(
+  mpg ~ cyl,
+  data = mtcars,
+  mean
+)
+
+sk_bar(
+  data = cyl_summary,
+  x = "cyl",
+  y = "mpg",
+  title = "Average MPG by Cylinder"
+)
+```
+
+These plotting functions reduce boilerplate code and create informative visualizations quickly.
+
+# 6. Complete Workflow Example
+
+The following example demonstrates a complete SKthink workflow from data cleaning to analysis and reporting.
+
+```{r eval=FALSE}
+sk_note()
+
+data(airquality)
+
+airquality_clean <- sk_impute(
+  airquality,
+  method = "median"
+)
+
+sk_stat(
+  airquality_clean
+)
+
+sk_histogram(
+  data = airquality_clean,
+  x = "Ozone"
+)
+
+sk_note_close(
+  "complete_analysis.txt"
+)
+```
+
+This workflow demonstrates how SKthink can be used in real-world projects while maintaining reproducibility.
+
+# Conclusion
+
+SKthink provides an integrated environment for:
+
+- Session logging and reproducibility
+- Data cleaning and preprocessing
+- Descriptive statistics
+- Statistical hypothesis testing
+- Data visualization
+
+By combining these tools into a single package, SKthink helps analysts focus on statistical thinking rather than repetitive coding tasks.
+````
