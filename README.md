@@ -31,7 +31,14 @@
 
 ### Install from GitHub (Development Version)
 
-```R
+
+#### Option 1: Using pak (Fastest)
+```r
+install.packages("pak")
+pak::pkg_install("sujitkumar03/SKthink")
+```
+#### Option 2: Using devtools
+```r
 # Install devtools if not already installed
 install.packages("devtools")
 
@@ -126,6 +133,7 @@ sk_scatter(
 ## 📖 Documentation
 
 Browse all package tutorials:
+Note: Please install the package using devtools before accessing the tutorials.
 
 ```r
 browseVignettes("SKthink")
