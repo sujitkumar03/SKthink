@@ -49,13 +49,19 @@ library(SKthink)
 ### 1. Session Logging
 
 ```r
-sknote()
+# Start logging session
+sknote(format = "html", file_path = "my_analysis.html")
 
+# Run your analysis
 summary(mtcars)
-
 mean(mtcars$mpg)
+plot(cars, main = "Speed vs Distance")
 
+# Stop logging and finalize the report
 sknote_stop()
+
+# Open the generated report
+browseURL("my_analysis.html")
 ```
 
 ### 2. Data Cleaning
