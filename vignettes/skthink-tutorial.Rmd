@@ -42,7 +42,7 @@ sknote(
   format = "html",
   file_path = "analysis_log.html"
 )
-````
+```
 
 ## Run Your Analysis
 
