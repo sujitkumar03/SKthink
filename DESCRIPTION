@@ -1,0 +1,22 @@
+Package: SKthink
+Title: Statistical Thinking Tools for Data Analysis
+Version: 0.1.0
+Authors@R: 
+    person("Sujit", "Kumar", , "sujit.kumar.stat@gmail.com", role = c("aut", "cre"))
+Description: Provides tools and functions for statistical thinking, 
+    data analysis, and visualization. Includes helper functions for 
+    exploratory data analysis, hypothesis testing, model diagnostics, 
+    and automated session logging with code, output, and figure capture.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Imports: 
+    base64enc,
+    htmltools,
+    clipr
+Suggests: 
+    testthat (>= 3.0.0),
+    ggplot2,
+    dplyr
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
