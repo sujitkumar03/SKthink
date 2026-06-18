@@ -34,11 +34,15 @@ This vignette demonstrates a complete workflow using SKthink.
 
 One of the key features of SKthink is session logging. It allows users to save their analysis workflow and create reproducible records of their work.
 
+````rs
 ## Start a Logging Session
 
 ```{r eval=FALSE}
-sk_note()
-```
+sknote(
+  format = "html",
+  file_path = "analysis_log.html"
+)
+````
 
 ## Run Your Analysis
 
@@ -53,8 +57,11 @@ summary(x)
 ## Stop and Save the Session
 
 ```{r eval=FALSE}
-sk_note_close("analysis_log.txt")
+sknote_stop()
 ```
+
+```
+
 
 ## Check Session Status
 
