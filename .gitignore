@@ -1,34 +1,15 @@
 ```
 # R-specific build artifacts
-Rplots.pdf
+*.Rproj.user/
 .Rhistory
 .RData
-*.Rproj.user/
-*.Rproj
-
-# Dependencies and packages
-library/
-pkg/
-
-# Documentation build artifacts
-man/*.Rd
-
-# Temporary files
-*.tmp
+.Rds
+# Dependencies
+renv/
+packrat/
+# Logs and temp files
 *.log
-*~
-
-# Environment files
-.env
-.env.local
-*.env.*
-
+*.tmp
 # Editors
-.vscode/
-.idea/
-*.swp
-
-# OS files
-.DS_Store
-Thumbs.db
+.Rproj
 ```

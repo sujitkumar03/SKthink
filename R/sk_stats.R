@@ -343,7 +343,6 @@ sk_mean <- function(x, na.rm = TRUE, trim = 0, conf_level = 0.95, verbose = TRUE
 }
 
 #' Print Method for sk_mean
-#' @keywords internal
 #' @export
 print.sk_mean <- function(x, ...) {
   cat("\nMean Analysis Results\n")

@@ -2,12 +2,15 @@ Package: SKthink
 Title: Statistical Thinking Tools for Data Analysis
 Version: 0.1.0
 Authors@R: 
-    person("Sujit", "Kumar", , "sujit.kumar.stat@gmail.com", role = c("aut", "cre"))
+    person("Sujit", "Kumar", , "sujit.kumar.stat@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: Provides tools and functions for statistical thinking, 
     data analysis, and visualization. Includes helper functions for 
     exploratory data analysis, hypothesis testing, model diagnostics, 
     and automated session logging with code, output, and figure capture.
 License: MIT + file LICENSE
+URL: https://github.com/sujitkumar03/SKthink
+BugReports: https://github.com/sujitkumar03/SKthink/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports: 
