@@ -133,6 +133,18 @@ sknote <- function(format = c("clipboard", "txt", "md", "html"),
     .sknote_env$plot_dir <- plot_dir
     .sknote_env$sknote_active <- TRUE
   }
+  
+  # Create a temporary file to capture all console output via sink()
+  temp_sink_file <- tempfile(pattern = "sknote_sink_", fileext = ".txt")
+  file.create(temp_sink_file, showWarnings = FALSE)
+  .sknote_env$sink_file <- temp_sink_file
+  .sknote_env$last_sink_size <- 0
+  
+  # Start sinking all console output to our temp file
+  sink(temp_sink_file, append = TRUE, split = TRUE)
+  if (requireNamespace("sinkr", quietly = TRUE)) {
+    sinkr::sink.r(type = "message", file = temp_sink_file, append = TRUE)
+  }
 
   # Helper function to encode image to base64 for HTML
   get_base64_image <- function(path) {
@@ -145,26 +157,17 @@ sknote <- function(format = c("clipboard", "txt", "md", "html"),
   # Main callback function - executes after each console command
   callback_func <- function(expr, value, ok, visible) {
     code_text <- paste(deparse(expr), collapse = "\n")
+    
+    # Read new output from the sink file
     out_text <- ""
-
-    # Capture output by re-evaluating with capture.output
-    # This captures ALL output including print(), cat(), etc.
-    out_lines <- c()
-
-    # Try to capture output
-    if (visible || inherits(expr, "call") || is.language(expr)) {
-      temp_out <- tryCatch({
-        # Capture all output from evaluating the expression
-        capture.output({
-          # Evaluate in parent frame
-          eval.parent(expr)
-        })
-      }, error = function(e) {
-        character(0)
-      })
-
-      if (length(temp_out) > 0) {
-        out_text <- paste(temp_out, collapse = "\n")
+    if (file.exists(temp_sink_file)) {
+      sink_content <- tryCatch(readLines(temp_sink_file, warn = FALSE), error = function(e) character(0))
+      current_size <- length(sink_content)
+      
+      if (current_size > .sknote_env$last_sink_size) {
+        new_lines <- sink_content[(.sknote_env$last_sink_size + 1):current_size]
+        out_text <- paste(new_lines, collapse = "\n")
+        .sknote_env$last_sink_size <- current_size
       }
     }
 
@@ -303,6 +306,13 @@ sknote_stop <- function() {
   }
 
   removeTaskCallback(.sknote_env$callback_id)
+  
+  # Stop sinking console output
+  sink()
+  if (requireNamespace("sinkr", quietly = TRUE)) {
+    tryCatch(sinkr::sink.r(type = "message"), error = function(e) NULL)
+  }
+  
   .sknote_env$sknote_active <- FALSE
 
   file_p <- .sknote_env$file_path
@@ -315,6 +325,8 @@ sknote_stop <- function() {
 
   .sknote_env$callback_id <- NULL
   .sknote_env$file_path <- NULL
+  .sknote_env$sink_file <- NULL
+  .sknote_env$last_sink_size <- NULL
 
   if (!is.null(file_p)) {
     message("🔴 SKthink: sknote stopped. File saved at: ", normalizePath(file_p, mustWork = FALSE))

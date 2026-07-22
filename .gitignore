@@ -1,9 +1,34 @@
-.Rproj.user
+```
+# R-specific build artifacts
+Rplots.pdf
 .Rhistory
 .RData
-.httr-oauth
+*.Rproj.user/
+*.Rproj
+
+# Dependencies and packages
+library/
+pkg/
+
+# Documentation build artifacts
+man/*.Rd
+
+# Temporary files
+*.tmp
+*.log
+*~
+
+# Environment files
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# OS files
 .DS_Store
-.quarto
-inst/doc
-/doc/
-/Meta/
+Thumbs.db
+```

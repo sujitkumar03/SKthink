@@ -14,7 +14,7 @@
 #' @param base_size Base font size (default: 12)
 #' @param legend_position Legend position: "top", "bottom", "left", "right", "none"
 #' @return ggplot2 theme object
-#' @keywords internal
+#' @export
 sk_theme <- function(theme_name = "minimal", base_size = 12, legend_position = "right") {
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
