@@ -19,4 +19,3 @@ ggplot2 theme object
 \description{
 Returns a consistent theme for all SKthink plots.
 }
-\keyword{internal}
