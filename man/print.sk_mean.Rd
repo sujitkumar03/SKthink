@@ -9,4 +9,3 @@
 \description{
 Print Method for sk_mean
 }
-\keyword{internal}
