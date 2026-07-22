@@ -1,9 +1,8 @@
-````markdown
 ---
-title: "SKthink: Statistical Thinking Tools"
+title: "SKthink: Statistical Thinking Tools - Complete Tutorial"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{SKthink: Statistical Thinking Tools}
+  %\VignetteIndexEntry{SKthink: Statistical Thinking Tools - Complete Tutorial}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,7 +14,8 @@ knitr::opts_chunk$set(
   fig.width = 7,
   fig.height = 5,
   warning = FALSE,
-  message = FALSE
+  message = FALSE,
+  cache = FALSE
 )
 ```
 
@@ -26,50 +26,214 @@ library(ggplot2)
 
 # Introduction
 
-Welcome to **SKthink**, a comprehensive R package for session logging, data cleaning, statistical analysis, and data visualization. The package is designed to simplify common statistical workflows while improving reproducibility and reporting.
+Welcome to **SKthink**, a comprehensive R package designed to streamline your statistical analysis workflow. SKthink provides an integrated suite of tools for:
 
-This vignette demonstrates a complete workflow using SKthink.
+- **Session Logging**: Automatically capture all console output, commands, and plots for reproducible research
+- **Data Cleaning**: Handle missing values and duplicate observations efficiently
+- **Descriptive Statistics**: Generate comprehensive summary statistics and frequency distributions
+- **Statistical Testing**: Perform common hypothesis tests with formatted outputs
+- **Data Visualization**: Create publication-ready graphics with minimal code
 
-# 1. Session Logging and Reproducibility
+This tutorial provides a complete guide to using all SKthink features in real-world analyses.
 
-One of the key features of SKthink is session logging. It allows users to save their analysis workflow and create reproducible records of their work.
+# 1. Session Logging with sknote: Capturing Your Entire Analysis
 
-````rs
-## Start a Logging Session
+## Overview
+
+The `sknote()` function is SKthink's flagship feature for reproducible research. Unlike traditional approaches that require manual copy-pasting, `sknote()` automatically captures **everything** that happens in your R console session:
+
+- All commands you type
+- All output (including `print()`, `cat()`, `message()`)
+- Warnings and error messages
+- All plots and figures
+- System information (R version, OS, working directory)
+
+This makes it invaluable for:
+- Creating audit trails for regulatory compliance
+- Sharing reproducible analyses with collaborators
+- Documenting exploratory data analysis
+- Building automated reports
+
+## Starting a Session
+
+Begin by calling `sknote()` with your preferred output format:
 
 ```{r eval=FALSE}
-sknote(
-  format = "html",
-  file_path = "analysis_log.html"
-)
+# HTML format (recommended for rich output with embedded plots)
+sknote(format = "html", file_path = "my_analysis.html")
+
+# Markdown format (great for version control and GitHub)
+sknote(format = "md", file_path = "analysis_log.md")
+
+# Plain text format (simple and universal)
+sknote(format = "txt", file_path = "session_log.txt")
+
+# Clipboard format (quick sharing without files)
+sknote(format = "clipboard")
 ```
 
-## Run Your Analysis
+### Parameters Explained
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `format` | Output format: `"html"`, `"md"`, `"txt"`, or `"clipboard"` | Required |
+| `file_path` | Path where the log file will be saved | Auto-generated |
+| `save_plots` | Whether to capture plots (TRUE/FALSE) | `TRUE` |
+| `plot_dir` | Directory to store plot images | `"sknote_plots"` |
+
+## Running Your Analysis
+
+Once `sknote()` is active, everything you do is automatically captured:
 
 ```{r eval=FALSE}
-x <- 1:10
+# Load data
+data(mtcars)
 
-mean(x)
+# Basic operations are captured
+head(mtcars)
+summary(mtcars$mpg)
 
-summary(x)
+# Functions with side effects
+cat("Starting analysis...\n")
+message("Processing data...")
+
+# Plots are automatically saved
+plot(mtcars$wt, mtcars$mpg)
+hist(mtcars$mpg, col = "lightblue")
+
+# Even warnings and errors are logged
+log(-1)  # Generates warning
 ```
 
-## Stop and Save the Session
+**Key Feature**: The `sink()` function is used internally to redirect ALL console output to your log file while still displaying it in the console. This ensures nothing is missed.
+
+## Stopping the Session
+
+When you're done, call `sknote_stop()` to finalize your log:
 
 ```{r eval=FALSE}
 sknote_stop()
 ```
 
-```
+This will:
+- Stop capturing console output
+- Close any open HTML tags (if HTML format)
+- Save the final file
+- Clean up temporary files
 
+## Format-Specific Examples
 
-## Check Session Status
+### HTML Format (Recommended)
+
+HTML output provides the richest experience with:
+- Syntax-highlighted code blocks
+- Embedded base64-encoded plots (no external files needed)
+- Styled output sections
+- System information header
 
 ```{r eval=FALSE}
-sk_note_status()
+sknote(format = "html", file_path = "report.html")
+
+# Your analysis here
+x <- rnorm(100)
+mean(x)
+hist(x)
+
+sknote_stop()
+# Opens report.html in browser with full formatting
 ```
 
-The session logging module helps users maintain reproducible analysis records and share their workflow with collaborators.
+### Markdown Format
+
+Perfect for version control and collaboration:
+
+```{r eval=FALSE}
+sknote(format = "md", file_path = "analysis.md")
+
+# Analysis code
+data(iris)
+tapply(iris$Sepal.Length, iris$Species, mean)
+
+sknote_stop()
+# Can be rendered to HTML/PDF with rmarkdown
+```
+
+### Text Format
+
+Simple, universal format readable anywhere:
+
+```{r eval=FALSE}
+sknote(format = "txt", file_path = "log.txt")
+
+# Simple analysis
+1 + 1
+print("Hello World")
+
+sknote_stop()
+# Plain text file with timestamps
+```
+
+### Clipboard Format
+
+Quick sharing without creating files:
+
+```{r eval=FALSE}
+sknote(format = "clipboard")
+
+# Quick calculations
+2 + 2
+sqrt(16)
+
+sknote_stop()
+# Everything is in your clipboard, ready to paste
+```
+
+## Advanced Tips
+
+### Multiple Sessions
+
+You can run multiple sknote sessions by stopping one before starting another:
+
+```{r eval=FALSE}
+# Session 1: Data cleaning
+sknote(format = "html", file_path = "cleaning.html")
+# ... cleaning code ...
+sknote_stop()
+
+# Session 2: Analysis
+sknote(format = "html", file_path = "analysis.html")
+# ... analysis code ...
+sknote_stop()
+```
+
+### Plot Management
+
+Control where plots are saved:
+
+```{r eval=FALSE}
+sknote(
+  format = "html",
+  save_plots = TRUE,
+  plot_dir = "my_figures"
+)
+```
+
+### Checking Status
+
+To verify if sknote is running:
+
+```{r eval=FALSE}
+# Check if a session is active
+exists(".sknote_env") && !is.null(SKthink:::.sknote_env$callback_id)
+```
+
+## Best Practices
+
+1. **Start Early**: Call `sknote()` at the beginning of your analysis session
+2. **Use HTML for Reports**: HTML format provides the best visual output
+3. **Include System Info**: The automatic system info helps with reproducibility
+4. **Version Control**: Use markdown format for Git-tracked projects
+5. **Regular Backups**: Stop and restart sknote periodically for long sessions
 
 # 2. Data Cleaning
 
@@ -77,13 +241,19 @@ Data cleaning is an essential step before statistical analysis. SKthink provides
 
 ## Missing Value Report
 
+The `sk_missing()` function generates a comprehensive report of missing values in your dataset:
+
 ```{r}
 data(airquality)
 
 sk_missing(airquality)
 ```
 
+This shows which variables have missing data and the percentage of missingness, helping you decide on an appropriate imputation strategy.
+
 ## Missing Value Imputation
+
+Use `sk_impute()` to fill in missing values using various methods:
 
 ```{r}
 airquality_clean <- sk_impute(
@@ -94,7 +264,16 @@ airquality_clean <- sk_impute(
 sk_missing(airquality_clean)
 ```
 
+Available methods include:
+- `"mean"`: Replace with column mean (numeric only)
+- `"median"`: Replace with column median (numeric only)
+- `"mode"`: Replace with most frequent value
+- `"zero"`: Replace with zero
+- `"remove"`: Remove rows with missing values
+
 ## Remove Duplicate Records
+
+The `sk_duplicate_remove()` function identifies and removes duplicate observations:
 
 ```{r}
 dup_data <- mtcars[c(1,1,2,3,3,3), ]
@@ -112,21 +291,31 @@ After cleaning, the dataset becomes ready for analysis.
 
 # 3. Descriptive Statistics and Exploratory Data Analysis
 
-Exploratory analysis helps users understand distributions, trends, and potential anomalies in the data.
+Exploratory analysis helps users understand distributions, trends, and potential anomalies in the data before formal hypothesis testing.
 
 ## Summary Statistics
+
+The `sk_stat()` function provides comprehensive descriptive statistics for all numeric variables:
 
 ```{r}
 sk_stat(mtcars)
 ```
 
+This includes count, mean, standard deviation, median, min, max, quartiles, and skewness for each numeric column.
+
 ## Frequency Distribution
+
+For categorical or discrete variables, use `sk_frequency()`:
 
 ```{r eval=FALSE}
 sk_frequency(mtcars$cyl)
 ```
 
+This shows counts, percentages, and cumulative percentages for each unique value.
+
 ## Group-wise Summary Statistics
+
+Compare statistics across groups with `sk_group_stat()`:
 
 ```{r eval=FALSE}
 sk_group_stat(
@@ -136,13 +325,17 @@ sk_group_stat(
 )
 ```
 
+This generates summary statistics (mean, sd, min, max, etc.) for each level of the grouping variable, perfect for exploratory comparisons before ANOVA or t-tests.
+
 Descriptive analysis provides an overview of the dataset before formal hypothesis testing.
 
 # 4. Statistical Analysis
 
-SKthink includes several statistical testing functions for common analytical tasks.
+SKthink includes several statistical testing functions that provide formatted, publication-ready outputs for common analytical tasks.
 
 ## Shapiro-Wilk Normality Test
+
+Test whether a variable follows a normal distribution:
 
 ```{r}
 sk_shapiro_test(
@@ -150,7 +343,11 @@ sk_shapiro_test(
 )
 ```
 
+The output includes the test statistic (W), p-value, and interpretation. A non-significant p-value (>0.05) suggests the data is normally distributed.
+
 ## Independent Sample T-Test
+
+Compare means between two independent groups:
 
 ```{r}
 auto_mpg <- mtcars$mpg[
@@ -167,7 +364,11 @@ sk_t_test_two(
 )
 ```
 
+Results include t-statistic, degrees of freedom, p-value, confidence interval, and effect size (Cohen's d).
+
 ## Analysis of Variance (ANOVA)
+
+Compare means across three or more groups:
 
 ```{r}
 mtcars$cyl <- factor(
@@ -180,7 +381,11 @@ sk_anova(
 )
 ```
 
+The function provides the ANOVA table with F-statistic, p-value, and post-hoc pairwise comparisons if the overall test is significant.
+
 ## Correlation Analysis
+
+Assess the relationship between two continuous variables:
 
 ```{r}
 sk_correlation_test(
@@ -190,13 +395,22 @@ sk_correlation_test(
 )
 ```
 
-These functions provide formatted outputs suitable for reports and publications.
+Available methods:
+- `"pearson"`: Linear correlation (default, requires normality)
+- `"spearman"`: Rank-based correlation (non-parametric)
+- `"kendall"`: Another rank-based method (good for small samples)
+
+Output includes correlation coefficient (r), p-value, confidence interval, and interpretation guidelines.
+
+These functions provide formatted outputs suitable for reports and publications, with automatic assumption checking where applicable.
 
 # 5. Data Visualization
 
-Visualization is an important component of statistical communication. SKthink provides wrappers around ggplot2 for generating publication-ready graphics.
+Visualization is an important component of statistical communication. SKthink provides wrappers around ggplot2 for generating publication-ready graphics with minimal code. All plotting functions use the consistent `sk_theme()` for professional styling.
 
 ## Scatter Plot
+
+Visualize relationships between two continuous variables:
 
 ```{r eval=FALSE}
 sk_scatter(
@@ -205,22 +419,41 @@ sk_scatter(
   y = "mpg",
   color = "cyl",
   add_regression = TRUE,
-  title = "Weight vs MPG"
+  title = "Weight vs MPG",
+  xlab = "Weight (1000 lbs)",
+  ylab = "Miles Per Gallon"
 )
 ```
 
+Key parameters:
+- `color`: Color points by a categorical variable
+- `add_regression`: Add a regression line (TRUE/FALSE)
+- `size`: Control point size
+- `alpha`: Control transparency
+
 ## Histogram
+
+Display the distribution of a single continuous variable:
 
 ```{r eval=FALSE}
 sk_histogram(
   data = mtcars,
   x = "mpg",
   add_density = TRUE,
-  title = "Distribution of MPG"
+  bins = 10,
+  title = "Distribution of MPG",
+  fill_color = "steelblue"
 )
 ```
 
+Key parameters:
+- `add_density`: Overlay a density curve (TRUE/FALSE)
+- `bins`: Number of histogram bins
+- `fill_color`: Bar fill color
+
 ## Box Plot
+
+Compare distributions across categories:
 
 ```{r eval=FALSE}
 sk_boxplot(
@@ -229,11 +462,19 @@ sk_boxplot(
   y = "mpg",
   fill = "cyl",
   add_points = TRUE,
-  title = "MPG by Cylinder Group"
+  title = "MPG by Cylinder Group",
+  palette = "Set2"
 )
 ```
 
+Key parameters:
+- `fill`: Fill boxes by a variable
+- `add_points`: Overlay individual data points (TRUE/FALSE)
+- `palette`: Color palette name (RColorBrewer)
+
 ## Bar Plot
+
+Display categorical summaries:
 
 ```{r eval=FALSE}
 cyl_summary <- aggregate(
@@ -246,51 +487,178 @@ sk_bar(
   data = cyl_summary,
   x = "cyl",
   y = "mpg",
-  title = "Average MPG by Cylinder"
+  title = "Average MPG by Cylinder",
+  fill_color = "coral",
+  add_labels = TRUE
 )
 ```
 
-These plotting functions reduce boilerplate code and create informative visualizations quickly.
+Key parameters:
+- `fill_color`: Bar fill color
+- `add_labels`: Add value labels on bars (TRUE/FALSE)
+- `orientation`: "vertical" or "horizontal"
 
-# 6. Complete Workflow Example
+## Line Plot
 
-The following example demonstrates a complete SKthink workflow from data cleaning to analysis and reporting.
+Show trends over time or ordered categories:
 
 ```{r eval=FALSE}
-sk_note()
+sk_line(
+  data = mtcars,
+  x = "carb",
+  y = "mpg",
+  title = "MPG by Carburetor Count",
+  color = "darkgreen",
+  add_points = TRUE
+)
+```
 
+Key parameters:
+- `color`: Line color
+- `add_points`: Add points at data values (TRUE/FALSE)
+- `line_type`: Line type (solid, dashed, dotted)
+
+All plotting functions return ggplot objects, so you can further customize them using standard ggplot2 syntax:
+
+```{r eval=FALSE}
+p <- sk_scatter(mtcars, "wt", "mpg")
+p + theme_minimal() + labs(caption = "Source: Motor Trend")
+```
+
+These plotting functions reduce boilerplate code and create informative visualizations quickly while maintaining consistency across all your figures.
+
+# 6. Complete Workflow Example: End-to-End Analysis
+
+The following example demonstrates a complete SKthink workflow from data cleaning to analysis and reporting, with full session logging for reproducibility.
+
+## Scenario: Air Quality Analysis
+
+Let's analyze the built-in `airquality` dataset, handling missing values and exploring relationships between variables.
+
+```{r eval=FALSE}
+# Step 1: Start session logging (captures everything!)
+sknote(
+  format = "html",
+  file_path = "airquality_analysis.html",
+  save_plots = TRUE
+)
+
+# Step 2: Load and inspect data
 data(airquality)
+head(airquality)
 
+# Step 3: Check for missing values
+sk_missing(airquality)
+
+# Step 4: Impute missing values with median
 airquality_clean <- sk_impute(
   airquality,
   method = "median"
 )
 
-sk_stat(
-  airquality_clean
+# Verify imputation worked
+sk_missing(airquality_clean)
+
+# Step 5: Descriptive statistics
+sk_stat(airquality_clean)
+
+# Step 6: Visualize distributions
+sk_histogram(
+  data = airquality_clean,
+  x = "Ozone",
+  add_density = TRUE,
+  title = "Ozone Distribution"
 )
 
 sk_histogram(
   data = airquality_clean,
-  x = "Ozone"
+  x = "Solar.R",
+  title = "Solar Radiation Distribution"
 )
 
-sk_note_close(
-  "complete_analysis.txt"
+# Step 7: Explore relationships
+sk_scatter(
+  data = airquality_clean,
+  x = "Temp",
+  y = "Ozone",
+  add_regression = TRUE,
+  title = "Temperature vs Ozone"
 )
+
+sk_boxplot(
+  data = airquality_clean,
+  x = "Month",
+  y = "Ozone",
+  fill = "Month",
+  title = "Ozone by Month"
+)
+
+# Step 8: Statistical testing
+# Test if Ozone differs by month
+airquality_clean$Month <- factor(airquality_clean$Month)
+sk_anova(Ozone ~ Month, data = airquality_clean)
+
+# Correlation between Temp and Ozone
+sk_correlation_test(
+  airquality_clean$Temp,
+  airquality_clean$Ozone,
+  method = "pearson"
+)
+
+# Step 9: Stop logging and save report
+sknote_stop()
+
+# The HTML file 'airquality_analysis.html' now contains:
+# - All commands executed
+# - All output and results
+# - All plots (embedded as base64)
+# - System information
+# - Timestamps
 ```
 
-This workflow demonstrates how SKthink can be used in real-world projects while maintaining reproducibility.
+## What You Get
+
+After running this workflow, you'll have:
+
+1. **HTML Report** (`airquality_analysis.html`): A complete, self-contained report with all analysis steps, outputs, and visualizations
+2. **Plot Directory** (`sknote_plots/`): Individual PNG files of all plots generated during the session
+3. **Reproducible Record**: Anyone can re-run your analysis and get identical results
+
+## Tips for Real Projects
+
+- **Start logging immediately**: Call `sknote()` before any analysis code
+- **Use meaningful filenames**: Include project name and date in log files
+- **Save plots externally**: Set `save_plots = TRUE` for high-resolution figures
+- **Combine with R Markdown**: Use sknote for exploration, then create final reports with R Markdown
+
+This workflow demonstrates how SKthink can be used in real-world projects while maintaining reproducibility and professional documentation standards.
 
 # Conclusion
 
 SKthink provides an integrated environment for:
 
-- Session logging and reproducibility
-- Data cleaning and preprocessing
-- Descriptive statistics
-- Statistical hypothesis testing
-- Data visualization
+- **Session Logging and Reproducibility**: Automatic capture of all console output, commands, and plots with `sknote()`
+- **Data Cleaning and Preprocessing**: Handle missing values and duplicates efficiently
+- **Descriptive Statistics**: Comprehensive summary statistics and group-wise comparisons
+- **Statistical Hypothesis Testing**: Formatted outputs for common tests (t-test, ANOVA, correlation)
+- **Data Visualization**: Publication-ready graphics with consistent styling
 
-By combining these tools into a single package, SKthink helps analysts focus on statistical thinking rather than repetitive coding tasks.
+## Why Choose SKthink?
+
+1. **Time-Saving**: Reduce boilerplate code for common statistical tasks
+2. **Reproducibility**: Built-in session logging ensures nothing is lost
+3. **Professional Output**: Formatted tables and publication-ready plots
+4. **Beginner-Friendly**: Simple function calls for complex operations
+5. **Extensible**: All functions return standard R objects for further customization
+
+By combining these tools into a single package, SKthink helps analysts focus on statistical thinking rather than repetitive coding tasks. Whether you're a student learning statistics, a researcher conducting analyses, or a data scientist building reports, SKthink streamlines your workflow from data import to final report.
+
+## Getting Help
+
+- Browse function documentation: `?sknote`, `?sk_stat`, etc.
+- View this vignette: `vignette("skthink-tutorial")`
+- Report issues: [GitHub Issues](https://github.com/yourusername/SKthink/issues)
+- Contributing: We welcome contributions! See CONTRIBUTING.md
+
+Happy analyzing with SKthink! 📊🔍
 ````
